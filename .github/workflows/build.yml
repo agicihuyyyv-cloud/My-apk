@@ -1,0 +1,25 @@
+name: Build APK
+on:
+  push:
+    branches: [ main ]
+  workflow_dispatch:
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - run: unzip -o DuitkuAndroid-v2.zip
+      - uses: actions/setup-java@v4
+        with:
+          distribution: 'temurin'
+          java-version: '17'
+      - uses: android-actions/setup-android@v3
+      - run: find . -name "gradlew" -exec chmod +x {} \;
+      - run: |
+          D=$(find . -name "gradlew" | head -n 1 | xargs dirname)
+          cd $D
+          ./gradlew assembleDebug
+      - uses: actions/upload-artifact@v4
+        with:
+          name: My-APK-Result
+          path: "**/app/build/outputs/apk/debug/*.apk"
