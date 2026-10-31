@@ -8,20 +8,18 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - run: |
-          rm -rf DuitkuAndroid
-          unzip -o DuitkuAndroid-v2.zip
-          ls -la
-          cat DuitkuAndroid/.github/workflows/build-apk.yml
+      - name: Unzip
+        run: unzip -o DuitkuAndroid-v2.zip
       - uses: actions/setup-java@v5
         with:
           distribution: 'temurin'
           java-version: '17'
-      - uses: android-actions/setup-android@v3
-      - run: |
-          cd DuitkuAndroid
-          chmod +x gradlew
-          ./gradlew assembleDebug
+      - name: Build
+        uses: gradle/gradle-build-action@v3
+        with:
+          gradle-version: 8.5
+          arguments: assembleDebug
+          build-root-directory: DuitkuAndroid
       - uses: actions/upload-artifact@v4
         with:
           name: Duitku-APK
